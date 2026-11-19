@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Essay Submission</title></head>
+<body>
+  <h2>Submit your essay</h2>
+  <input id="name" placeholder="Your name" /><br /><br />
+  <textarea id="essay" rows="12" cols="70" placeholder="Write your essay here..."></textarea><br />
+  <button id="btn">Submit</button>
+  <pre id="result"></pre>
+
+  <script>
+    const btn = document.getElementById('btn');
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('/api/essays', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            studentName: document.getElementById('name').value,
+            essay: document.getElementById('essay').value
+          })
+        });
+        const data = await res.json();
+        document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+
+        if (res.ok) {
+          document.getElementById('essay').value = '';
+        }
+      } catch (err) {
+        document.getElementById('result').textContent = 'Error: ' + err.message;
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Submit';
+    });
+  </script>
+</body>
+</html>
